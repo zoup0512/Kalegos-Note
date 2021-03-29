@@ -16,7 +16,7 @@
     <item
         android:id="@+id/nav_notebook"
         android:icon="@drawable/ic_folder_white_24dp"
-        android:title="@string/files" />
+        android:title="@string/bottom_menu_knowledge" />
 
     <item
         android:id="@+id/nav_todo"
@@ -31,5 +31,5 @@
     <item
         android:id="@+id/nav_more"
         android:icon="@drawable/ic_favorite_black_24dp"
-        android:title="@string/more" />
+        android:title="@string/bottom_menu_about" />
 </menu>

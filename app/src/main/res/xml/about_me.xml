@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="@string/pref_key__more_info__project_community"
+        android:title="@string/community">
+
+        <Preference
+            android:icon="@drawable/ic_group_black_24dp"
+            android:key="@string/pref_key__more_info__join_community"
+            android:title="@string/join_community" />
+
+        <Preference
+            android:icon="@drawable/ic_info_black_24dp"
+            android:key="@string/pref_key__more_info__contributors_public_info"
+            android:summary="@string/contributors_public_add_yourself_description"
+            android:title="@string/contributors" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

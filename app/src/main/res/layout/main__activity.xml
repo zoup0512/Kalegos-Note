@@ -36,7 +36,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager.widget.ViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/main__view_pager_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -49,18 +49,18 @@
         android:layout_height="match_parent"
         android:layout_gravity="bottom">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_add_new_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/bottom_navigation_bar"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_add_white_24dp"
-            android:contentDescription="@string/create_new_file_or_folder"
-            tools:elevation="2dp"
-            tools:ignore="RtlHardcoded" />
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:id="@+id/fab_add_new_item"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_above="@+id/bottom_navigation_bar"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_alignParentRight="true"-->
+<!--            android:layout_margin="16dp"-->
+<!--            android:src="@drawable/ic_add_white_24dp"-->
+<!--            android:contentDescription="@string/create_new_file_or_folder"-->
+<!--            tools:elevation="2dp"-->
+<!--            tools:ignore="RtlHardcoded" />-->
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation_bar"

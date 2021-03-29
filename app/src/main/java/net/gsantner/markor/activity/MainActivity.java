@@ -16,15 +16,20 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+
 import androidx.annotation.NonNull;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.core.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
+import androidx.lifecycle.Lifecycle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
+
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,14 +50,19 @@ import net.gsantner.markor.util.PermissionChecker;
 import net.gsantner.markor.util.ShareUtil;
 import net.gsantner.opoc.activity.GsFragmentBase;
 import net.gsantner.opoc.format.markdown.SimpleMarkdownParser;
+import net.gsantner.opoc.ui.AboutMeFragment;
+import net.gsantner.opoc.ui.FileIndexFragment;
 import net.gsantner.opoc.ui.FilesystemViewerAdapter;
 import net.gsantner.opoc.ui.FilesystemViewerData;
 import net.gsantner.opoc.ui.FilesystemViewerFragment;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -71,11 +81,11 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
     @BindView(R.id.bottom_navigation_bar)
     BottomNavigationView _bottomNav;
 
-    @BindView(R.id.fab_add_new_item)
-    FloatingActionButton _fab;
+//    @BindView(R.id.fab_add_new_item)
+//    FloatingActionButton _fab;
 
     @BindView(R.id.main__view_pager_container)
-    ViewPager _viewPager;
+    ViewPager2 _viewPager;
     private SectionsPagerAdapter _viewPagerAdapter;
 
     private boolean _doubleBackToExitPressedOnce;
@@ -103,28 +113,29 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
         setContentView(R.layout.main__activity);
         ButterKnife.bind(this);
         setSupportActionBar(_toolbar);
-        _toolbar.setOnClickListener(this::onToolbarTitleClicked);
+//        _toolbar.setOnClickListener(this::onToolbarTitleClicked);
+        _viewPager.setUserInputEnabled(false);
 
         optShowRate();
 
-        try {
-            if (_appSettings.isAppCurrentVersionFirstStart(true)) {
-                SimpleMarkdownParser smp = SimpleMarkdownParser.get().setDefaultSmpFilter(SimpleMarkdownParser.FILTER_ANDROID_TEXTVIEW);
-                String html = "";
-                html += smp.parse(getString(R.string.copyright_license_text_official).replace("\n", "  \n"), "").getHtml();
-                html += "<br/><br/><br/><big><big>" + getString(R.string.changelog) + "</big></big><br/>" + smp.parse(getResources().openRawResource(R.raw.changelog), "", SimpleMarkdownParser.FILTER_ANDROID_TEXTVIEW);
-                html += "<br/><br/><br/><big><big>" + getString(R.string.licenses) + "</big></big><br/>" + smp.parse(getResources().openRawResource(R.raw.licenses_3rd_party), "").getHtml();
-                ActivityUtils _au = new ActivityUtils(this);
-                _au.showDialogWithHtmlTextView(0, html);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            if (_appSettings.isAppCurrentVersionFirstStart(true)) {
+//                SimpleMarkdownParser smp = SimpleMarkdownParser.get().setDefaultSmpFilter(SimpleMarkdownParser.FILTER_ANDROID_TEXTVIEW);
+//                String html = "";
+//                html += smp.parse(getString(R.string.copyright_license_text_official).replace("\n", "  \n"), "").getHtml();
+//                html += "<br/><br/><br/><big><big>" + getString(R.string.changelog) + "</big></big><br/>" + smp.parse(getResources().openRawResource(R.raw.changelog), "", SimpleMarkdownParser.FILTER_ANDROID_TEXTVIEW);
+//                html += "<br/><br/><br/><big><big>" + getString(R.string.licenses) + "</big></big><br/>" + smp.parse(getResources().openRawResource(R.raw.licenses_3rd_party), "").getHtml();
+//                ActivityUtils _au = new ActivityUtils(this);
+//                _au.showDialogWithHtmlTextView(0, html);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         IntroActivity.optStart(this);
 
         // Setup viewpager
-        _viewPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        _viewPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getLifecycle());
         _viewPager.setAdapter(_viewPagerAdapter);
         _viewPager.setOffscreenPageLimit(4);
         _bottomNav.setOnNavigationItemSelectedListener(this);
@@ -141,6 +152,21 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
                 _bottomNav.setSelectedItemId(_appSettings.getAppStartupTab());
             }
         }, 1);
+        hideActionBar();
+        _viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                Menu menu = _bottomNav.getMenu();
+                PermissionChecker permc = new PermissionChecker(MainActivity.this);
+                (_lastBottomMenuItem != null ? _lastBottomMenuItem : menu.getItem(0)).setChecked(false);
+                _lastBottomMenuItem = menu.getItem(position).setChecked(true);
+                _toolbar.setTitle(new String[]{getFileBrowserTitle(), getString(R.string.todo), getString(R.string.quicknote), getString(R.string.more)}[position]);
+
+                if (position > 0 && position < 3) {
+                    permc.doIfExtStoragePermissionGranted(); // cannot prevent bottom tab selection
+                }
+            }
+        });
     }
 
     private void optShowRate() {
@@ -218,6 +244,7 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
         }
     }
 
+    @SuppressLint("MissingSuperCall")
     @Override
     @SuppressWarnings("unused")
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -233,61 +260,61 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
         }
     }
 
-    @OnLongClick({R.id.fab_add_new_item})
-    public boolean onLongClickFab(View view) {
-        PermissionChecker permc = new PermissionChecker(this);
-        FilesystemViewerFragment fsFrag = (FilesystemViewerFragment) _viewPagerAdapter.getFragmentByTag(FilesystemViewerFragment.FRAGMENT_TAG);
-        if (fsFrag != null && permc.mkdirIfStoragePermissionGranted()) {
-            fsFrag.getAdapter().setCurrentFolder(fsFrag.getCurrentFolder().equals(FilesystemViewerAdapter.VIRTUAL_STORAGE_RECENTS)
-                            ? FilesystemViewerAdapter.VIRTUAL_STORAGE_FAVOURITE : FilesystemViewerAdapter.VIRTUAL_STORAGE_RECENTS
-                    , true);
-        }
-        return true;
-    }
+//    @OnLongClick({R.id.fab_add_new_item})
+//    public boolean onLongClickFab(View view) {
+//        PermissionChecker permc = new PermissionChecker(this);
+//        FilesystemViewerFragment fsFrag = (FilesystemViewerFragment) _viewPagerAdapter.getFragmentByTag(FilesystemViewerFragment.FRAGMENT_TAG);
+//        if (fsFrag != null && permc.mkdirIfStoragePermissionGranted()) {
+//            fsFrag.getAdapter().setCurrentFolder(fsFrag.getCurrentFolder().equals(FilesystemViewerAdapter.VIRTUAL_STORAGE_RECENTS)
+//                            ? FilesystemViewerAdapter.VIRTUAL_STORAGE_FAVOURITE : FilesystemViewerAdapter.VIRTUAL_STORAGE_RECENTS
+//                    , true);
+//        }
+//        return true;
+//    }
 
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
-    @OnClick({R.id.fab_add_new_item})
-    public void onClickFab(View view) {
-        PermissionChecker permc = new PermissionChecker(this);
-        FilesystemViewerFragment fsFrag = (FilesystemViewerFragment) _viewPagerAdapter.getFragmentByTag(FilesystemViewerFragment.FRAGMENT_TAG);
-        if (fsFrag == null) {
-            return;
-        }
-
-        if (fsFrag.getAdapter().isCurrentFolderVirtual()) {
-            fsFrag.getAdapter().loadFolder(_appSettings.getNotebookDirectory());
-            return;
-        }
-        if (permc.mkdirIfStoragePermissionGranted()) {
-            switch (view.getId()) {
-                case R.id.fab_add_new_item: {
-                    if (_shareUtil.isUnderStorageAccessFolder(fsFrag.getCurrentFolder()) && _shareUtil.getStorageAccessFrameworkTreeUri() == null) {
-                        _shareUtil.showMountSdDialog(this);
-                        return;
-                    }
-
-                    if (!fsFrag.getAdapter().isCurrentFolderWriteable()) {
-                        return;
-                    }
-
-                    NewFileDialog dialog = NewFileDialog.newInstance(fsFrag.getCurrentFolder(), true, (ok, f) -> {
-                        if (ok) {
-                            if (f.isFile()) {
-                                DocumentActivity.launch(MainActivity.this, f, false, false, null);
-                            } else if (f.isDirectory()) {
-                                FilesystemViewerFragment wrFragment = (FilesystemViewerFragment) _viewPagerAdapter.getFragmentByTag(FilesystemViewerFragment.FRAGMENT_TAG);
-                                if (wrFragment != null) {
-                                    wrFragment.reloadCurrentFolder();
-                                }
-                            }
-                        }
-                    });
-                    dialog.show(getSupportFragmentManager(), NewFileDialog.FRAGMENT_TAG);
-                    break;
-                }
-            }
-        }
-    }
+//    @OnClick({R.id.fab_add_new_item})
+//    public void onClickFab(View view) {
+//        PermissionChecker permc = new PermissionChecker(this);
+//        FilesystemViewerFragment fsFrag = (FilesystemViewerFragment) _viewPagerAdapter.getFragmentByTag(FilesystemViewerFragment.FRAGMENT_TAG);
+//        if (fsFrag == null) {
+//            return;
+//        }
+//
+//        if (fsFrag.getAdapter().isCurrentFolderVirtual()) {
+//            fsFrag.getAdapter().loadFolder(_appSettings.getNotebookDirectory());
+//            return;
+//        }
+//        if (permc.mkdirIfStoragePermissionGranted()) {
+//            switch (view.getId()) {
+//                case R.id.fab_add_new_item: {
+//                    if (_shareUtil.isUnderStorageAccessFolder(fsFrag.getCurrentFolder()) && _shareUtil.getStorageAccessFrameworkTreeUri() == null) {
+//                        _shareUtil.showMountSdDialog(this);
+//                        return;
+//                    }
+//
+//                    if (!fsFrag.getAdapter().isCurrentFolderWriteable()) {
+//                        return;
+//                    }
+//
+//                    NewFileDialog dialog = NewFileDialog.newInstance(fsFrag.getCurrentFolder(), true, (ok, f) -> {
+//                        if (ok) {
+//                            if (f.isFile()) {
+//                                DocumentActivity.launch(MainActivity.this, f, false, false, null);
+//                            } else if (f.isDirectory()) {
+//                                FilesystemViewerFragment wrFragment = (FilesystemViewerFragment) _viewPagerAdapter.getFragmentByTag(FilesystemViewerFragment.FRAGMENT_TAG);
+//                                if (wrFragment != null) {
+//                                    wrFragment.reloadCurrentFolder();
+//                                }
+//                            }
+//                        }
+//                    });
+//                    dialog.show(getSupportFragmentManager(), NewFileDialog.FRAGMENT_TAG);
+//                    break;
+//                }
+//            }
+//        }
+//    }
 
     @Override
     public void onBackPressed() {
@@ -312,17 +339,19 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        updateFabVisibility(item.getItemId() == R.id.nav_notebook);
+//        updateFabVisibility(item.getItemId() == R.id.nav_notebook);
         PermissionChecker permc = new PermissionChecker(this);
 
         switch (item.getItemId()) {
             case R.id.nav_notebook: {
+                hideActionBar();
                 _viewPager.setCurrentItem(0);
-                _toolbar.setTitle(getFileBrowserTitle());
+//                _toolbar.setTitle(getFileBrowserTitle());
                 return true;
             }
 
             case R.id.nav_todo: {
+                showActionBar();
                 permc.doIfExtStoragePermissionGranted(); // cannot prevent bottom tab selection
                 restoreDefaultToolbar();
                 _viewPager.setCurrentItem(1);
@@ -330,6 +359,7 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
                 return true;
             }
             case R.id.nav_quicknote: {
+                showActionBar();
                 permc.doIfExtStoragePermissionGranted(); // cannot prevent bottom tab selection
                 restoreDefaultToolbar();
                 _viewPager.setCurrentItem(2);
@@ -337,22 +367,23 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
                 return true;
             }
             case R.id.nav_more: {
+                showActionBar();
                 restoreDefaultToolbar();
                 _viewPager.setCurrentItem(3);
-                _toolbar.setTitle(R.string.more);
+                _toolbar.setTitle(R.string.about);
                 return true;
             }
         }
         return false;
     }
 
-    public void updateFabVisibility(boolean visible) {
-        if (visible) {
-            _fab.show();
-        } else {
-            _fab.hide();
-        }
-    }
+//    public void updateFabVisibility(boolean visible) {
+//        if (visible) {
+//            _fab.show();
+//        } else {
+//            _fab.hide();
+//        }
+//    }
 
     public String getFileBrowserTitle() {
         final File file = _appSettings.getFileBrowserLastBrowsedFolder();
@@ -363,19 +394,19 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
         return title;
     }
 
-    @OnPageChange(value = R.id.main__view_pager_container, callback = OnPageChange.Callback.PAGE_SELECTED)
-    public void onViewPagerPageSelected(int pos) {
-        Menu menu = _bottomNav.getMenu();
-        PermissionChecker permc = new PermissionChecker(this);
-        (_lastBottomMenuItem != null ? _lastBottomMenuItem : menu.getItem(0)).setChecked(false);
-        _lastBottomMenuItem = menu.getItem(pos).setChecked(true);
-        updateFabVisibility(pos == 0);
-        _toolbar.setTitle(new String[]{getFileBrowserTitle(), getString(R.string.todo), getString(R.string.quicknote), getString(R.string.more)}[pos]);
+//    @OnPageChange(value = R.id.main__view_pager_container, callback = OnPageChange.Callback.PAGE_SELECTED)
+//    public void onViewPagerPageSelected(int pos) {
+//        Menu menu = _bottomNav.getMenu();
+//        PermissionChecker permc = new PermissionChecker(this);
+//        (_lastBottomMenuItem != null ? _lastBottomMenuItem : menu.getItem(0)).setChecked(false);
+//        _lastBottomMenuItem = menu.getItem(pos).setChecked(true);
+//        _toolbar.setTitle(new String[]{getFileBrowserTitle(), getString(R.string.todo), getString(R.string.quicknote), getString(R.string.more)}[pos]);
+//
+//        if (pos > 0 && pos < 3) {
+//            permc.doIfExtStoragePermissionGranted(); // cannot prevent bottom tab selection
+//        }
+//    }
 
-        if (pos > 0 && pos < 3) {
-            permc.doIfExtStoragePermissionGranted(); // cannot prevent bottom tab selection
-        }
-    }
 
     private FilesystemViewerData.Options _filesystemDialogOptions = null;
 
@@ -421,49 +452,13 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
         return _filesystemDialogOptions;
     }
 
-    class SectionsPagerAdapter extends FragmentPagerAdapter {
+    class SectionsPagerAdapter extends FragmentStateAdapter {
         private HashMap<Integer, GsFragmentBase> _fragCache = new LinkedHashMap<>();
 
-        SectionsPagerAdapter(FragmentManager fragMgr) {
-            super(fragMgr);
+        public SectionsPagerAdapter(@NonNull @NotNull FragmentManager fragmentManager, @NonNull @NotNull Lifecycle lifecycle) {
+            super(fragmentManager, lifecycle);
         }
 
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            GsFragmentBase fragment = (GsFragmentBase) super.instantiateItem(container, position);
-            _fragCache.put(position, fragment);
-            return fragment;
-        }
-
-        @Override
-        public Fragment getItem(int pos) {
-            switch (_bottomNav.getMenu().getItem(pos).getItemId()) {
-                default:
-                case R.id.nav_notebook: {
-                    return FilesystemViewerFragment.newInstance(getFilesystemFragmentOptions(null));
-                }
-                case R.id.nav_quicknote: {
-                    return DocumentEditFragment.newInstance(_appSettings.getQuickNoteFile(), false, false);
-                }
-                case R.id.nav_todo: {
-                    return DocumentEditFragment.newInstance(_appSettings.getTodoFile(), false, false);
-                }
-                case R.id.nav_more: {
-                    return MoreFragment.newInstance();
-                }
-            }
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            super.destroyItem(container, position, object);
-            _fragCache.remove(position);
-        }
-
-        @Override
-        public int getCount() {
-            return _bottomNav.getMenu().size();
-        }
 
         public GsFragmentBase getFragmentByTag(String fragmentTag) {
             for (GsFragmentBase frag : _fragCache.values()) {
@@ -476,6 +471,38 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
 
         public HashMap<Integer, GsFragmentBase> getCachedFragments() {
             return _fragCache;
+        }
+
+        @NonNull
+        @NotNull
+        @Override
+        public Fragment createFragment(int position) {
+            switch (_bottomNav.getMenu().getItem(position).getItemId()) {
+                default:
+                case R.id.nav_notebook: {
+//                    return FilesystemViewerFragment.newInstance(getFilesystemFragmentOptions(null));
+                    hideActionBar();
+                    return FileIndexFragment.getInstance();
+                }
+                case R.id.nav_quicknote: {
+                    showActionBar();
+                    return DocumentEditFragment.newInstance(_appSettings.getQuickNoteFile(), false, false);
+                }
+                case R.id.nav_todo: {
+                    showActionBar();
+                    return DocumentEditFragment.newInstance(_appSettings.getTodoFile(), false, false);
+                }
+                case R.id.nav_more: {
+                    showActionBar();
+//                    return MoreFragment.newInstance();
+                    return AboutMeFragment.getInstance();
+                }
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return _bottomNav.getMenu().size();
         }
     }
 
@@ -497,11 +524,23 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
         }
     }
 
-    private void onToolbarTitleClicked(View v) {
-        Fragment f = _viewPagerAdapter.getItem(_viewPager.getCurrentItem());
-        if (f instanceof DocumentEditFragment) {
-            DocumentEditFragment def = (DocumentEditFragment) f;
-            def.onToolbarTitleClicked(_toolbar);
+//    private void onToolbarTitleClicked(View v) {
+//        Fragment f=_viewPagerAdapter.createFragment(_viewPager.getCurrentItem());
+//        if (f instanceof DocumentEditFragment) {
+//            DocumentEditFragment def = (DocumentEditFragment) f;
+//            def.onToolbarTitleClicked(_toolbar);
+//        }
+//    }
+
+    public void hideActionBar() {
+        if (Objects.requireNonNull(getSupportActionBar()).isShowing()) {
+            getSupportActionBar().hide();
+        }
+    }
+
+    public void showActionBar() {
+        if (!Objects.requireNonNull(getSupportActionBar()).isShowing()) {
+            getSupportActionBar().show();
         }
     }
 }
