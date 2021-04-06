@@ -71,6 +71,8 @@ import butterknife.OnClick;
 import butterknife.OnLongClick;
 import butterknife.OnPageChange;
 
+import static androidx.viewpager2.widget.ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT;
+
 public class MainActivity extends AppActivityBase implements FilesystemViewerFragment.FilesystemFragmentOptionsListener, BottomNavigationView.OnNavigationItemSelectedListener {
 
     public static boolean IS_DEBUG_ENABLED = false;
@@ -113,7 +115,7 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
         setContentView(R.layout.main__activity);
         ButterKnife.bind(this);
         setSupportActionBar(_toolbar);
-//        _toolbar.setOnClickListener(this::onToolbarTitleClicked);
+        _toolbar.setOnClickListener(this::onToolbarTitleClicked);
         _viewPager.setUserInputEnabled(false);
 
         optShowRate();
@@ -137,7 +139,7 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
         // Setup viewpager
         _viewPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getLifecycle());
         _viewPager.setAdapter(_viewPagerAdapter);
-        _viewPager.setOffscreenPageLimit(4);
+        _viewPager.setOffscreenPageLimit(OFFSCREEN_PAGE_LIMIT_DEFAULT);
         _bottomNav.setOnNavigationItemSelectedListener(this);
 
         // noinspection PointlessBooleanExpression - Send Test intent
@@ -152,7 +154,6 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
                 _bottomNav.setSelectedItemId(_appSettings.getAppStartupTab());
             }
         }, 1);
-        hideActionBar();
         _viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
@@ -344,14 +345,12 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
 
         switch (item.getItemId()) {
             case R.id.nav_notebook: {
-                hideActionBar();
                 _viewPager.setCurrentItem(0);
-//                _toolbar.setTitle(getFileBrowserTitle());
+                _toolbar.setTitle(getFileBrowserTitle());
                 return true;
             }
 
             case R.id.nav_todo: {
-                showActionBar();
                 permc.doIfExtStoragePermissionGranted(); // cannot prevent bottom tab selection
                 restoreDefaultToolbar();
                 _viewPager.setCurrentItem(1);
@@ -359,7 +358,6 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
                 return true;
             }
             case R.id.nav_quicknote: {
-                showActionBar();
                 permc.doIfExtStoragePermissionGranted(); // cannot prevent bottom tab selection
                 restoreDefaultToolbar();
                 _viewPager.setCurrentItem(2);
@@ -367,7 +365,6 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
                 return true;
             }
             case R.id.nav_more: {
-                showActionBar();
                 restoreDefaultToolbar();
                 _viewPager.setCurrentItem(3);
                 _toolbar.setTitle(R.string.about);
@@ -477,23 +474,24 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
         @NotNull
         @Override
         public Fragment createFragment(int position) {
+            _toolbar.setTitle(new String[]{getFileBrowserTitle(), getString(R.string.todo), getString(R.string.quicknote), getString(R.string.more)}[position]);
             switch (_bottomNav.getMenu().getItem(position).getItemId()) {
                 default:
                 case R.id.nav_notebook: {
 //                    return FilesystemViewerFragment.newInstance(getFilesystemFragmentOptions(null));
-                    hideActionBar();
-                    return FileIndexFragment.getInstance();
+//                    hideActionBar();
+                    return FileIndexFragment.getInstance(getFilesystemFragmentOptions(null));
                 }
                 case R.id.nav_quicknote: {
-                    showActionBar();
+//                    showActionBar();
                     return DocumentEditFragment.newInstance(_appSettings.getQuickNoteFile(), false, false);
                 }
                 case R.id.nav_todo: {
-                    showActionBar();
+//                    showActionBar();
                     return DocumentEditFragment.newInstance(_appSettings.getTodoFile(), false, false);
                 }
                 case R.id.nav_more: {
-                    showActionBar();
+//                    showActionBar();
 //                    return MoreFragment.newInstance();
                     return AboutMeFragment.getInstance();
                 }
@@ -504,6 +502,8 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
         public int getItemCount() {
             return _bottomNav.getMenu().size();
         }
+
+
     }
 
     @Override
@@ -524,23 +524,23 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
         }
     }
 
-//    private void onToolbarTitleClicked(View v) {
-//        Fragment f=_viewPagerAdapter.createFragment(_viewPager.getCurrentItem());
-//        if (f instanceof DocumentEditFragment) {
-//            DocumentEditFragment def = (DocumentEditFragment) f;
-//            def.onToolbarTitleClicked(_toolbar);
+    private void onToolbarTitleClicked(View v) {
+        Fragment f = _viewPagerAdapter.createFragment(_viewPager.getCurrentItem());
+        if (f instanceof DocumentEditFragment) {
+            DocumentEditFragment def = (DocumentEditFragment) f;
+            def.onToolbarTitleClicked(_toolbar);
+        }
+    }
+
+//    public void hideActionBar() {
+//        if (Objects.requireNonNull(getSupportActionBar()).isShowing()) {
+//            getSupportActionBar().hide();
 //        }
 //    }
-
-    public void hideActionBar() {
-        if (Objects.requireNonNull(getSupportActionBar()).isShowing()) {
-            getSupportActionBar().hide();
-        }
-    }
-
-    public void showActionBar() {
-        if (!Objects.requireNonNull(getSupportActionBar()).isShowing()) {
-            getSupportActionBar().show();
-        }
-    }
+//
+//    public void showActionBar() {
+//        if (!Objects.requireNonNull(getSupportActionBar()).isShowing()) {
+//            getSupportActionBar().show();
+//        }
+//    }
 }

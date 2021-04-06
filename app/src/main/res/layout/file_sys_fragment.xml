@@ -9,5 +9,5 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context="net.gsantner.opoc.ui.ArticleFragment"
-    tools:listitem="@layout/article_item" />
+    tools:context="net.gsantner.opoc.ui.FileSysFragment"
+    tools:listitem="@layout/file_item" />

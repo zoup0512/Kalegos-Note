@@ -21,12 +21,12 @@ import java.util.List;
  * {@link RecyclerView.Adapter} that can display a {@link PlaceholderItem}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class ArticleRecyclerViewAdapter extends RecyclerView.Adapter<ArticleRecyclerViewAdapter.ViewHolder> {
+public class FileSysRecyclerViewAdapter extends RecyclerView.Adapter<FileSysRecyclerViewAdapter.ViewHolder> {
 
     private final List<FileInfo> mData;
     private Context mContext;
 
-    public ArticleRecyclerViewAdapter(List<FileInfo> data) {
+    public FileSysRecyclerViewAdapter(List<FileInfo> data) {
         mData = data;
     }
 

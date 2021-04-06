@@ -8,11 +8,14 @@
  *
 #########################################################*/
 apply plugin: 'com.android.application'
-if (enable_plugin_kotlin) {
-    apply plugin: 'kotlin-android'
-    apply plugin: 'kotlin-android-extensions'
-    apply plugin: 'kotlin-kapt'
-}
+//if (enable_plugin_kotlin) {
+//    apply plugin: 'kotlin-android'
+//    apply plugin: 'kotlin-android-extensions'
+//    apply plugin: 'kotlin-kapt'
+//}
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 rootProject.ext.version_minSdk = 16
 
@@ -154,13 +157,18 @@ dependencies {
 
     // Processors
     def anpros = ["com.jakewharton:butterknife-compiler:${version_library_butterknife}"]
-    for (anpro in anpros) {
-        if (enable_plugin_kotlin) {
-            kapt anpro
-        } else {
-            annotationProcessor anpro
-        }
-    }
+//    for (anpro in anpros) {
+//        if (enable_plugin_kotlin) {
+//            kapt anpro
+//        } else {
+//            annotationProcessor anpro
+//        }
+//    }
+    kapt anpros
+
+    def room_version = "2.2.5"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "com.google.android.material:material:1.2.1"

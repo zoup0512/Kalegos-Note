@@ -11,6 +11,10 @@ package net.gsantner.markor;
 
 import android.app.Application;
 
+import net.gsantner.opoc.bean.Dir;
+import net.gsantner.opoc.bean.MdFile;
+import net.gsantner.opoc.db.MyDatabase;
+
 public class App extends Application {
     // Make resources not marked as unused
     @SuppressWarnings("unused")
@@ -32,5 +36,18 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         _app = this;
+        initDatabase();
+    }
+
+    private void initDatabase() {
+        MyDatabase myDatabase = MyDatabase.Companion.getInstance();
+        Dir android = new Dir(null, 1, "Android", null, null, null, 1, null, null, System.currentTimeMillis());
+        Dir java = new Dir(null, 2, "Java", null, null, null, 1, null, null, System.currentTimeMillis());
+        Dir kotlin = new Dir(null, 3, "Kotlin", null, null, null, 1, null, null, System.currentTimeMillis());
+        Dir jetpack = new Dir(null, 31, "Jetpack", 3, "Kotlin", null, 0, null, null, System.currentTimeMillis());
+        Dir room = new Dir(null, 311, "Room", 31, "Jetpack", null, 0, null, null, System.currentTimeMillis());
+        MdFile mdFile1 = new MdFile(1, 1, "TypeConverter的使用", null, 311, "zoup", true, null, null, null, null, System.currentTimeMillis());
+        myDatabase.getDirDAO().insertDir(android, java, kotlin, jetpack, room);
+        myDatabase.getFileDAO().insert(mdFile1);
     }
 }

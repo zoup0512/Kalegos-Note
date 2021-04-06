@@ -5,7 +5,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
@@ -27,9 +26,9 @@ public class FileIndexFragment extends GsFragmentBase {
     @BindView(R.id.content_vp)
     ViewPager2 mViewPager2;
     private FileIndexAdapter mAdapter;
-    private List<ArticleFragment> mFragments=new ArrayList<>();
+    private List<FileSysFragment> mFragments=new ArrayList<>();
 
-    public static FileIndexFragment getInstance() {
+    public static FileIndexFragment getInstance(FilesystemViewerData.Options options) {
         return new FileIndexFragment();
     }
 
@@ -47,9 +46,9 @@ public class FileIndexFragment extends GsFragmentBase {
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mAdapter = new FileIndexAdapter(mFragments, getChildFragmentManager(), getLifecycle());
-        mFragments.add(ArticleFragment.getInstance("Daily"));
-        mFragments.add(ArticleFragment.getInstance("Blog"));
-        mFragments.add(ArticleFragment.getInstance("News"));
+        mFragments.add(FileSysFragment.getInstance("Daily"));
+        mFragments.add(FileSysFragment.getInstance("Blog"));
+        mFragments.add(FileSysFragment.getInstance("News"));
         mViewPager2.setAdapter(mAdapter);
         new TabLayoutMediator(mTabLayout, mViewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override

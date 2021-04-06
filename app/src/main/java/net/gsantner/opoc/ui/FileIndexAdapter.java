@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class FileIndexAdapter extends FragmentStateAdapter {
-    private List<ArticleFragment> mFragments;
+    private List<FileSysFragment> mFragments;
     public FileIndexAdapter(@NonNull @NotNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
     }
@@ -21,7 +21,7 @@ public class FileIndexAdapter extends FragmentStateAdapter {
         super(fragmentManager, lifecycle);
     }
 
-    public FileIndexAdapter(List<ArticleFragment> fragments,@NonNull @NotNull FragmentManager fragmentManager, @NonNull @NotNull Lifecycle lifecycle){
+    public FileIndexAdapter(List<FileSysFragment> fragments, @NonNull @NotNull FragmentManager fragmentManager, @NonNull @NotNull Lifecycle lifecycle){
         this(fragmentManager, lifecycle);
         mFragments=fragments;
 
