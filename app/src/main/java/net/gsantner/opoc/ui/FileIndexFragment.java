@@ -28,7 +28,7 @@ public class FileIndexFragment extends GsFragmentBase {
     private FileIndexAdapter mAdapter;
     private List<FileSysFragment> mFragments=new ArrayList<>();
 
-    public static FileIndexFragment getInstance(FilesystemViewerData.Options options) {
+    public static FileIndexFragment getInstance() {
         return new FileIndexFragment();
     }
 

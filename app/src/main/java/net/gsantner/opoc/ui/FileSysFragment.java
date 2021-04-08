@@ -50,8 +50,8 @@ public class FileSysFragment extends Fragment {
     private String mTitle;
     private List<FileInfo> mFileInfoList = new ArrayList<>();
 
-    private FileSysFragment(String title) {
-        mTitle = title;
+    public FileSysFragment() {
+
     }
 
     public String getTitle() {
@@ -63,7 +63,10 @@ public class FileSysFragment extends Fragment {
     }
 
     public static FileSysFragment getInstance(String title) {
-        return new FileSysFragment(title);
+        FileSysFragment fragment=new FileSysFragment();
+        Bundle args=new Bundle();
+        args.putString("title",title);
+        return new FileSysFragment();
     }
 
 
@@ -82,12 +85,6 @@ public class FileSysFragment extends Fragment {
             initView(recyclerView);
         }
         return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-//        readMDFile();
     }
 
     private void readMDFile() {

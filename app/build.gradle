@@ -28,7 +28,7 @@ android {
 
     defaultConfig {
         resValue "string", "manifest_package_id", "com.zoup.android.mknote"
-        applicationId "net.gsantner.markor"
+        applicationId "com.zoup.android.kalegos.note"
         versionName "2.6.0"
         versionCode 122
 
@@ -45,7 +45,7 @@ android {
     flavorDimensions "default"
     productFlavors {
         flavorAtest {
-            applicationId "net.gsantner.markor_test"
+            applicationId "com.zoup.android.kalegos.note"
             versionCode = Integer.parseInt(new Date().format('yyMMdd'))
             versionName = new Date().format('yyMMdd')
             buildConfigField "boolean", "IS_TEST_BUILD", "true"
