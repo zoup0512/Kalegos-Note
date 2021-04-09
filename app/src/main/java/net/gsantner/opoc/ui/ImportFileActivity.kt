@@ -17,11 +17,12 @@ class ImportFileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.import_file_activity)
+        addListeners()
 
     }
 
     private fun addListeners() {
-        back_image.setOnClickListener {
+        select_file_button.setOnClickListener {
             openFileView()
         }
     }

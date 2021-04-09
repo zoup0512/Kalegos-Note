@@ -51,6 +51,7 @@ import net.gsantner.opoc.ui.FileSysFragment;
 import net.gsantner.opoc.ui.FilesystemViewerAdapter;
 import net.gsantner.opoc.ui.FilesystemViewerData;
 import net.gsantner.opoc.ui.FilesystemViewerFragment;
+import net.gsantner.opoc.ui.ImportFileActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -172,6 +173,10 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
                 new ActivityUtils(this).animateToActivity(SettingsActivity.class, false, null);
                 return true;
             }
+            case R.id.action_import: {
+                new ActivityUtils(this).animateToActivity(ImportFileActivity.class, false, null);
+                return true;
+            }
         }
         return false;
 
@@ -182,6 +187,7 @@ public class MainActivity extends AppActivityBase implements FilesystemViewerFra
         getMenuInflater().inflate(R.menu.main__menu, menu);
 
         menu.findItem(R.id.action_settings).setVisible(_appSettings.isShowSettingsOptionInMainToolbar());
+        menu.findItem(R.id.action_import).setVisible(true);
 
         _contextUtils.tintMenuItems(menu, true, Color.WHITE);
         _contextUtils.setSubMenuIconsVisiblity(menu, true);

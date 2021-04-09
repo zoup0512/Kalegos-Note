@@ -110,6 +110,9 @@
             android:name=".activity.IntroActivity"
             android:label="@string/about" />
         <activity
+            android:name="net.gsantner.opoc.ui.ImportFileActivity"
+            android:label="@string/about" />
+        <activity
             android:name=".activity.openeditor.OpenEditorQuickNoteActivity"
             android:enabled="false"
             android:icon="@drawable/ic_launcher_quicknote"
