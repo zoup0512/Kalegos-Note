@@ -8,7 +8,6 @@ import androidx.room.TypeConverters
 @TypeConverters(value = [TagConverter::class])
 data class MdFile(
     @PrimaryKey(autoGenerate = true)
-    var id:Int?=null,
     var fileId:Int?=null,
     var name:String?=null,
     var desc:String?=null,

@@ -10,23 +10,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import net.gsantner.markor.R;
-import net.gsantner.markor.activity.DocumentActivity;
-import net.gsantner.opoc.model.FileInfo;
-import net.gsantner.opoc.ui.placeholder.PlaceholderContent.PlaceholderItem;
+import net.gsantner.opoc.bean.MdFile;
 
 import java.io.File;
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link PlaceholderItem}.
- * TODO: Replace the implementation with code for your data type.
- */
+
 public class FileSysRecyclerViewAdapter extends RecyclerView.Adapter<FileSysRecyclerViewAdapter.ViewHolder> {
 
-    private final List<FileInfo> mData;
+    private final List<MdFile> mData;
     private Context mContext;
 
-    public FileSysRecyclerViewAdapter(List<FileInfo> data) {
+    public FileSysRecyclerViewAdapter(List<MdFile> data) {
         mData = data;
     }
 
@@ -40,14 +35,13 @@ public class FileSysRecyclerViewAdapter extends RecyclerView.Adapter<FileSysRecy
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mFileInfo = mData.get(position);
-        holder.mFileNameText.setText(mData.get(position).getFileName());
+        holder.mdFile = mData.get(position);
+        holder.mFileNameText.setText(holder.mdFile.getName());
         holder.mFilePathText.setText(mData.get(position).getFilePath());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Activity activity = (Activity) mContext;
-                DocumentActivity.launch(activity, new File(holder.mFileInfo.getFilePath()), false, true, null);
             }
         });
 
@@ -61,7 +55,7 @@ public class FileSysRecyclerViewAdapter extends RecyclerView.Adapter<FileSysRecy
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mFileNameText;
         public final TextView mFilePathText;
-        public FileInfo mFileInfo;
+        public MdFile mdFile;
 
         public ViewHolder(View view) {
             super(view);

@@ -13,6 +13,8 @@ import android.app.Application;
 
 import net.gsantner.opoc.bean.Dir;
 import net.gsantner.opoc.bean.MdFile;
+import net.gsantner.opoc.db.DirDAO;
+import net.gsantner.opoc.db.MdFileDAO;
 import net.gsantner.opoc.db.MyDatabase;
 
 public class App extends Application {
@@ -36,18 +38,24 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         _app = this;
-        initDatabase();
     }
 
-    private void initDatabase() {
-        MyDatabase myDatabase = MyDatabase.Companion.getInstance();
-        Dir android = new Dir(null, 1, "Android", null, null, null, 1, null, null, System.currentTimeMillis());
-        Dir java = new Dir(null, 2, "Java", null, null, null, 1, null, null, System.currentTimeMillis());
-        Dir kotlin = new Dir(null, 3, "Kotlin", null, null, null, 1, null, null, System.currentTimeMillis());
-        Dir jetpack = new Dir(null, 31, "Jetpack", 3, "Kotlin", null, 0, null, null, System.currentTimeMillis());
-        Dir room = new Dir(null, 311, "Room", 31, "Jetpack", null, 0, null, null, System.currentTimeMillis());
-        MdFile mdFile1 = new MdFile(1, 1, "TypeConverter的使用", null, 311, "zoup", true, null, null, null, null, System.currentTimeMillis());
-        myDatabase.getDirDAO().insertDir(android, java, kotlin, jetpack, room);
-        myDatabase.getFileDAO().insert(mdFile1);
+    private volatile static MyDatabase myDatabase;
+    private volatile static DirDAO dirDAO;
+    private volatile static MdFileDAO mdFileDAO;
+
+    public static MyDatabase getMyDatabase() {
+      if(myDatabase==null){
+          myDatabase=MyDatabase.Companion.getInstance();
+      }
+      return myDatabase;
+    }
+
+    public static DirDAO getDirDAO(){
+        return getMyDatabase().getDirDAO();
+    }
+
+    public static MdFileDAO getMdFileDAO(){
+        return getMyDatabase().getFileDAO();
     }
 }

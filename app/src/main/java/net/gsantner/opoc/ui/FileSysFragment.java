@@ -142,12 +142,12 @@ public class FileSysFragment extends Fragment {
     }
 
     private void initView(RecyclerView recyclerView) {
-        Dir android = new Dir(1, 1, "Android", null, null, null, 1, null, null, System.currentTimeMillis());
-        Dir java = new Dir(2, 2, "Java", null, null, null, 1, null, null, System.currentTimeMillis());
-        Dir kotlin = new Dir(3, 3, "Kotlin", null, null, null, 1, null, null, System.currentTimeMillis());
-        Dir jetpack = new Dir(4, 31, "Jetpack", 3, "Kotlin", null, 0, null, null, System.currentTimeMillis());
-        Dir room = new Dir(1, 311, "Room", 31, "Jetpack", null, 0, null, null, System.currentTimeMillis());
-        MdFile mdFile1 = new MdFile(1, 1, "TypeConverter的使用", null, 311, "zoup", true, null, null, null, null, System.currentTimeMillis());
+        Dir android = new Dir( 1, "Android", null, null, null, 1, null, null, System.currentTimeMillis());
+        Dir java = new Dir(2, "Java", null, null, null, 1, null, null, System.currentTimeMillis());
+        Dir kotlin = new Dir(3, "Kotlin", null, null, null, 1, null, null, System.currentTimeMillis());
+        Dir jetpack = new Dir(31, "Jetpack", 3, "Kotlin", null, 0, null, null, System.currentTimeMillis());
+        Dir room = new Dir(311, "Room", 31, "Jetpack", null, 0, null, null, System.currentTimeMillis());
+        MdFile mdFile1 = new MdFile(1, "TypeConverter的使用", null, 311, "zoup", true, null, null, null, null, System.currentTimeMillis());
         List<TreeNode> nodes = new ArrayList<>();
         TreeNode<DirItem> app = new TreeNode<>(new DirItem("Kotlin"));
         nodes.add(app);
