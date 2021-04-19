@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 @TypeConverters(value = [TagConverter::class])
 data class Dir(
     @PrimaryKey(autoGenerate = true)
-    var dirId: Int?=null,
+    var dirId: Int?,
     var dirName: String?,
     var superDirId: Int?,
     var superDirName: String?,

@@ -11,6 +11,8 @@ package net.gsantner.markor;
 
 import android.app.Application;
 
+import androidx.multidex.MultiDex;
+
 import net.gsantner.opoc.bean.Dir;
 import net.gsantner.opoc.bean.MdFile;
 import net.gsantner.opoc.db.DirDAO;
@@ -38,24 +40,15 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         _app = this;
+        MultiDex.install(this);
     }
 
     private volatile static MyDatabase myDatabase;
-    private volatile static DirDAO dirDAO;
-    private volatile static MdFileDAO mdFileDAO;
 
     public static MyDatabase getMyDatabase() {
       if(myDatabase==null){
           myDatabase=MyDatabase.Companion.getInstance();
       }
       return myDatabase;
-    }
-
-    public static DirDAO getDirDAO(){
-        return getMyDatabase().getDirDAO();
-    }
-
-    public static MdFileDAO getMdFileDAO(){
-        return getMyDatabase().getFileDAO();
     }
 }

@@ -10,7 +10,7 @@
         android:layout_height="50dp">
 
         <ImageView
-            android:id="@+id/back_image"
+            android:id="@+id/import_back_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -52,7 +52,7 @@
             android:layout_marginLeft="@dimen/dp_20">
 
             <TextView
-                android:id="@+id/file_tip_text"
+                android:id="@+id/import_file_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/dp_6"
-                android:layout_toRightOf="@+id/file_tip_text"
+                android:layout_toRightOf="@+id/import_file_text"
                 android:editable="false"
                 android:ellipsize="end"
                 android:hint="导入MD文件"
@@ -81,7 +81,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/dp_6"
                 android:layout_toRightOf="@+id/file_name_edit"
-                android:text="完成"
+                android:text="选择文件"
                 android:textColor="@color/white"
                 android:textSize="@dimen/dp_14"
                 android:theme="@style/AppTheme" />
@@ -90,22 +90,35 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_50">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_20">
 
-            <org.angmarch.views.NiceSpinner
-                android:id="@+id/choose_dir_spinner"
+            <TextView
+                android:id="@+id/choose_dir_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="@dimen/dp_20"
-                app:textTint="#252525" />
+                android:text="选择目录:"
+                android:textColor="#333333"
+                android:textSize="@dimen/dp_14" />
+
+            <org.angmarch.views.NiceSpinner
+                android:id="@+id/choose_dir_spinner"
+                android:layout_width="@dimen/dp_180"
+                android:layout_height="@dimen/dp_40"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/choose_dir_text"
+                android:layout_marginLeft="@dimen/dp_10"
+                app:textTint="#252525"
+                app:backgroundSelector="#F6F6F6"/>
 
             <ImageView
                 android:id="@+id/add_dir_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="@dimen/dp_20"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/choose_dir_spinner"
+                android:layout_marginLeft="@dimen/dp_20"
                 android:src="@drawable/ic_add" />
 
         </RelativeLayout>
